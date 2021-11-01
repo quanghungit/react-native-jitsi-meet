@@ -10,7 +10,7 @@ RCT_EXPORT_MODULE(RNJitsiMeetView)
 RCT_EXPORT_VIEW_PROPERTY(onConferenceJoined, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onConferenceTerminated, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onConferenceWillJoin, RCTBubblingEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onEnteredPip, RCTBubblingEventBlock)
+// RCT_EXPORT_VIEW_PROPERTY(onEnteredPip, RCTBubblingEventBlock)
 
 - (UIView *)view
 {
@@ -24,7 +24,7 @@ RCT_EXPORT_METHOD(initialize)
     RCTLogInfo(@"Initialize is deprecated in v2");
 }
 
-RCT_EXPORT_METHOD(call:(NSString *)urlString userInfo:(NSDictionary *)userInfo)
+RCT_EXPORT_METHOD(call:(NSString *)urlString userInfo:(NSDictionary *)userInfo subject:(NSString *)subjectString  videoMuted:(BOOL)videoMuted audioMuted:(BOOL)audioMuted nativeCall:(BOOL)nativeCall)
 {
     RCTLogInfo(@"Load URL %@", urlString);
     JitsiMeetUserInfo * _userInfo = [[JitsiMeetUserInfo alloc] init];
@@ -44,6 +44,10 @@ RCT_EXPORT_METHOD(call:(NSString *)urlString userInfo:(NSDictionary *)userInfo)
         JitsiMeetConferenceOptions *options = [JitsiMeetConferenceOptions fromBuilder:^(JitsiMeetConferenceOptionsBuilder *builder) {        
             builder.room = urlString;
             builder.userInfo = _userInfo;
+            builder.subject = subjectString;
+            builder.videoMuted = videoMuted;
+            builder.audioMuted = audioMuted;
+            [builder setFeatureFlag:@"call-integration.enabled" withBoolean:nativeCall];
         }];
         [jitsiMeetView join:options];
     });
@@ -111,13 +115,13 @@ RCT_EXPORT_METHOD(endCall)
     jitsiMeetView.onConferenceWillJoin(data);
 }
 
-- (void)enterPictureInPicture:(NSDictionary *)data {
-    RCTLogInfo(@"Enter Picture in Picture");
-    if (!jitsiMeetView.onEnteredPip) {
-        return;
-    }
+// - (void)enterPictureInPicture:(NSDictionary *)data {
+//     RCTLogInfo(@"Enter Picture in Picture");
+//     if (!jitsiMeetView.onEnteredPip) {
+//         return;
+//     }
 
-    jitsiMeetView.onEnteredPip(data);
-}
+//     jitsiMeetView.onEnteredPip(data);
+// }
 
 @end
